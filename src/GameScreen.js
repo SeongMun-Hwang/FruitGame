@@ -217,6 +217,15 @@ const GameScreen = ({ onGoToTitle }) => {
 
   return (
     <View style={styles.container}>
+	{/* ✅ 좌상단 버튼 */}
+    <View style={styles.topButtonsContainer}>
+      <TouchableOpacity style={styles.topButton} onPress={handleGoToTitleFromGame}>
+        <Text style={styles.topButtonText}>뒤로가기</Text>
+      </TouchableOpacity>
+      <TouchableOpacity style={styles.topButton} onPress={handleRestart}>
+        <Text style={styles.topButtonText}>재시작</Text>
+      </TouchableOpacity>
+    </View>
       {/* 타이머 표시 */}
       <View style={styles.timerContainer}>
         <Text style={styles.timerText}>{formatTime(timer)}</Text>
@@ -263,10 +272,10 @@ const GameScreen = ({ onGoToTitle }) => {
             <Text style={styles.gameOverText}>Game Over!</Text>
             <Text style={styles.finalScoreText}>Final Score: {score}</Text>
             <TouchableOpacity style={styles.button} onPress={handleRestart}>
-              <Text style={styles.buttonText}>Restart</Text>
+              <Text style={styles.buttonText}>재시작</Text>
             </TouchableOpacity>
             <TouchableOpacity style={styles.button} onPress={handleGoToTitleFromGame}>
-              <Text style={styles.buttonText}>Go to Title</Text>
+              <Text style={styles.buttonText}>타이틀</Text>
             </TouchableOpacity>
           </View>
         </View>
@@ -362,6 +371,26 @@ const styles = StyleSheet.create({
     fontSize: 18,
     fontWeight: 'bold',
   },
+  topButtonsContainer: {
+  position: 'absolute',
+  top: 20,
+  left: 20,
+  flexDirection: 'row',
+  gap: 10,
+  zIndex: 1000,
+},
+topButton: {
+  backgroundColor: '#333',
+  paddingVertical: 6,
+  paddingHorizontal: 12,
+  borderRadius: 6,
+  marginRight: 10,
+},
+topButtonText: {
+  color: '#fff',
+  fontSize: 14,
+  fontWeight: 'bold',
+},
 });
 
 export default GameScreen;
