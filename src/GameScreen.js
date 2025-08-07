@@ -1,6 +1,7 @@
 import React, { useState, useEffect, useRef } from 'react';
 import { View, StyleSheet, Text, TouchableOpacity, Alert, useWindowDimensions } from 'react-native';
 import { PanResponder, Animated } from 'react-native';
+import { ActivityIndicator } from 'react-native'; //로딩
 
 const GRID_WIDTH = 10;
 const GRID_HEIGHT = 17;
@@ -19,17 +20,20 @@ const GameScreen = ({ onGoToTitle }) => {
 
   const [timer, setTimer] = useState(GAME_DURATION); // 타이머 상태 (초)
   const [gameOver, setGameOver] = useState(false); // 게임 오버 상태
+  const [loading, setLoading] = useState(true); //로딩
 
   // 그리드 초기화 함수
   const initializeGrid = () => {
-    console.log('Initializing fixed grid...');
-    const newGrid = Array.from({ length: GRID_HEIGHT }, () =>
-      Array.from({ length: GRID_WIDTH }, () => Math.floor(Math.random() * 9) + 1)
-    );
-    setGrid(newGrid);
-    gridRef.current = newGrid; // useRef에도 최신 그리드 상태 저장
-    console.log('Fixed Grid initialized:', newGrid);
-  };
+  console.log('Initializing fixed grid...');
+  const newGrid = Array.from({ length: GRID_HEIGHT }, () =>
+    Array.from({ length: GRID_WIDTH }, () => Math.floor(Math.random() * 9) + 1)
+  );
+  setGrid(newGrid);
+  gridRef.current = newGrid;
+  console.log('Fixed Grid initialized:', newGrid);
+  setLoading(false); // ✅ 로딩 완료
+};
+
 
   // 게임 재시작 함수
   const handleRestart = () => {
@@ -215,73 +219,84 @@ const GameScreen = ({ onGoToTitle }) => {
   ).current;
 
 
-  return (
-    <View style={styles.container}>
-	{/* ✅ 좌상단 버튼 */}
-    <View style={styles.topButtonsContainer}>
-      <TouchableOpacity style={styles.topButton} onPress={handleGoToTitleFromGame}>
-        <Text style={styles.topButtonText}>뒤로가기</Text>
-      </TouchableOpacity>
-      <TouchableOpacity style={styles.topButton} onPress={handleRestart}>
-        <Text style={styles.topButtonText}>재시작</Text>
-      </TouchableOpacity>
-    </View>
-      {/* 타이머 표시 */}
-      <View style={styles.timerContainer}>
-        <Text style={styles.timerText}>{formatTime(timer)}</Text>
+return (
+  <View style={styles.container}>
+    {/* ✅ 로딩 스피너 조건부 렌더링 */}
+    {loading ? (
+      <View style={styles.loadingContainer}>
+        <ActivityIndicator size="large" color="#007bff" />
+        <Text style={styles.loadingText}>게임 불러오는 중...</Text>
       </View>
-
-      <Text style={styles.scoreText}>Score: {score}</Text>
-      <View
-        ref={gridContainerRef}
-        onLayout={(event) => {
-          const layout = event.nativeEvent.layout;
-          gridContainerLayoutRef.current = layout;
-          console.log('Grid Container Layout set:', layout);
-        }}
-        style={styles.gridContainer}
-        {...panResponder.panHandlers}
-      >
-        {grid.map((row, rowIndex) => (
-          <View key={rowIndex} style={styles.row}>
-            {row.map((cell, colIndex) => {
-              const isSelected = selectedCells.some(
-                (selected) => selected.x === colIndex && selected.y === rowIndex
-              );
-              return (
-                <View
-                  key={`${rowIndex}-${colIndex}`}
-                  style={[styles.cell,
-                    { width: CELL_SIZE, height: CELL_SIZE },
-                    isSelected && styles.selectedCell,
-                  ]}
-                >
-                  {/* cell이 0보다 클 때만 텍스트 렌더링 */}
-                  {cell > 0 && <Text style={styles.appleText}>{cell}</Text>}
-                </View>
-              );
-            })}
-          </View>
-        ))}
-      </View>
-
-      {/* 게임 오버 패널 */}
-      {gameOver && (
-        <View style={styles.gameOverOverlay}>
-          <View style={styles.gameOverPanel}>
-            <Text style={styles.gameOverText}>Game Over!</Text>
-            <Text style={styles.finalScoreText}>Final Score: {score}</Text>
-            <TouchableOpacity style={styles.button} onPress={handleRestart}>
-              <Text style={styles.buttonText}>재시작</Text>
-            </TouchableOpacity>
-            <TouchableOpacity style={styles.button} onPress={handleGoToTitleFromGame}>
-              <Text style={styles.buttonText}>타이틀</Text>
-            </TouchableOpacity>
-          </View>
+    ) : (
+      <>
+        {/* 기존 게임 화면 구성요소들 */}
+        <View style={styles.topButtonsContainer}>
+          <TouchableOpacity style={styles.topButton} onPress={handleGoToTitleFromGame}>
+            <Text style={styles.topButtonText}>뒤로가기</Text>
+          </TouchableOpacity>
+          <TouchableOpacity style={styles.topButton} onPress={handleRestart}>
+            <Text style={styles.topButtonText}>재시작</Text>
+          </TouchableOpacity>
         </View>
-      )}
-    </View>
-  );
+
+        <View style={styles.timerContainer}>
+          <Text style={styles.timerText}>{formatTime(timer)}</Text>
+        </View>
+
+        <Text style={styles.scoreText}>Score: {score}</Text>
+        
+        <View
+          ref={gridContainerRef}
+          onLayout={(event) => {
+            const layout = event.nativeEvent.layout;
+            gridContainerLayoutRef.current = layout;
+          }}
+          style={styles.gridContainer}
+          {...panResponder.panHandlers}
+        >
+          {grid.map((row, rowIndex) => (
+            <View key={rowIndex} style={styles.row}>
+              {row.map((cell, colIndex) => {
+                const isSelected = selectedCells.some(
+                  (selected) => selected.x === colIndex && selected.y === rowIndex
+                );
+                return (
+                  <View
+                    key={`${rowIndex}-${colIndex}`}
+                    style={[
+                      styles.cell,
+                      { width: CELL_SIZE, height: CELL_SIZE },
+                      isSelected && styles.selectedCell,
+                    ]}
+                  >
+                    {cell > 0 && <Text style={styles.appleText}>{cell}</Text>}
+                  </View>
+                );
+              })}
+            </View>
+          ))}
+        </View>
+
+        {/* 게임 오버 오버레이 */}
+        {gameOver && (
+          <View style={styles.gameOverOverlay}>
+            <View style={styles.gameOverPanel}>
+              <Text style={styles.gameOverText}>Game Over!</Text>
+              <Text style={styles.finalScoreText}>Final Score: {score}</Text>
+              <TouchableOpacity style={styles.button} onPress={handleRestart}>
+                <Text style={styles.buttonText}>재시작</Text>
+              </TouchableOpacity>
+              <TouchableOpacity style={styles.button} onPress={handleGoToTitleFromGame}>
+                <Text style={styles.buttonText}>타이틀</Text>
+              </TouchableOpacity>
+            </View>
+          </View>
+        )}
+      </>
+    )}
+  </View>
+);
+
 };
 
 const styles = StyleSheet.create({
@@ -390,6 +405,17 @@ topButtonText: {
   color: '#fff',
   fontSize: 14,
   fontWeight: 'bold',
+},
+loadingContainer: {
+  flex: 1,
+  justifyContent: 'center',
+  alignItems: 'center',
+  backgroundColor: '#f0f0f0',
+},
+loadingText: {
+  marginTop: 10,
+  fontSize: 18,
+  color: '#333',
 },
 });
 
