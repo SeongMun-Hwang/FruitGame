@@ -1,5 +1,5 @@
 import React, { useState, useEffect, useRef } from 'react';
-import { View, StyleSheet, Text, TouchableOpacity, Alert, useWindowDimensions } from 'react-native';
+import { View, StyleSheet, Text, TouchableOpacity, Alert, useWindowDimensions, ImageBackground } from 'react-native';
 import { PanResponder, Animated } from 'react-native';
 import { ActivityIndicator } from 'react-native'; //로딩
 
@@ -269,7 +269,14 @@ return (
                       isSelected && styles.selectedCell,
                     ]}
                   >
-                    {cell > 0 && <Text style={styles.appleText}>{cell}</Text>}
+                    {cell > 0 && (
+                      <ImageBackground
+                        source={require('./assets/images/grid.png')}
+                        style={styles.cellImage}
+                      >
+                        <Text style={styles.appleText}>{cell}</Text>
+                      </ImageBackground>
+                    )}
                   </View>
                 );
               })}
@@ -346,6 +353,13 @@ const styles = StyleSheet.create({
   appleText: {
     fontSize: 20,
     fontWeight: 'bold',
+  },
+  cellImage: {
+    flex: 1,
+    justifyContent: 'center',
+    alignItems: 'center',
+    width: '100%',
+    height: '100%',
   },
   gameOverOverlay: {
     position: 'absolute',
