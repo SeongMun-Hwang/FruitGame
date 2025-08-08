@@ -23,15 +23,53 @@ const GameScreen = ({ onGoToTitle }) => {
   const [loading, setLoading] = useState(true); //로딩
 
   // 그리드 초기화 함수
-  const initializeGrid = () => {
-  console.log('Initializing fixed grid...');
-  const newGrid = Array.from({ length: GRID_HEIGHT }, () =>
-    Array.from({ length: GRID_WIDTH }, () => Math.floor(Math.random() * 9) + 1)
-  );
+  // const initializeGrid = () => {
+  // console.log('Initializing fixed grid...');
+  // const newGrid = Array.from({ length: GRID_HEIGHT }, () =>
+    // Array.from({ length: GRID_WIDTH }, () => Math.floor(Math.random() * 9) + 1)
+  // );
+  // setGrid(newGrid);
+  // gridRef.current = newGrid;
+  // console.log('Fixed Grid initialized:', newGrid);
+  // setLoading(false); // ✅ 로딩 완료
+// };
+const initializeGrid = () => {
+  console.log('Initializing balanced grid...');
+
+  const totalCells = GRID_WIDTH * GRID_HEIGHT;
+  const baseCount = Math.floor(totalCells / 9); // 각 숫자가 나오는 기본 개수
+  const remainder = totalCells % 9; // 나머지 칸 수 (균등하게 배분할 수 없는 경우)
+
+  let numbers = [];
+
+  // 각 숫자를 baseCount 만큼 채움
+  for (let num = 1; num <= 9; num++) {
+    for (let i = 0; i < baseCount; i++) {
+      numbers.push(num);
+    }
+  }
+
+  // 나머지 칸은 1부터 remainder 개수만큼 추가
+  for (let i = 0; i < remainder; i++) {
+    numbers.push((i % 9) + 1);
+  }
+
+  // 무작위로 섞기 (Fisher–Yates shuffle)
+  for (let i = numbers.length - 1; i > 0; i--) {
+    const j = Math.floor(Math.random() * (i + 1));
+    [numbers[i], numbers[j]] = [numbers[j], numbers[i]];
+  }
+
+  // 2차원 배열로 변환
+  const newGrid = [];
+  for (let row = 0; row < GRID_HEIGHT; row++) {
+    newGrid.push(numbers.slice(row * GRID_WIDTH, (row + 1) * GRID_WIDTH));
+  }
+
   setGrid(newGrid);
   gridRef.current = newGrid;
-  console.log('Fixed Grid initialized:', newGrid);
-  setLoading(false); // ✅ 로딩 완료
+  console.log('Balanced grid initialized:', newGrid);
+  setLoading(false); // 로딩 완료
 };
 
 
@@ -351,8 +389,9 @@ const styles = StyleSheet.create({
     backgroundColor: 'rgba(0, 255, 0, 0.3)', // 선택된 셀 배경색
   },
   appleText: {
-    fontSize: 20,
+    fontSize: 25,
     fontWeight: 'bold',
+	color : 'white',
   },
   cellImage: {
     flex: 1,
