@@ -29,7 +29,7 @@ const TitleScreen = ({ onStartGame, onExitGame }) => {
 
   return (
     <View style={styles.container}>
-      <Text style={styles.title}>Apple Game</Text>
+      <Text style={styles.title}>10 SUM</Text>
 
       <TouchableOpacity style={styles.button} onPress={onStartGame}>
         <Text style={styles.buttonText}>게임 시작</Text>

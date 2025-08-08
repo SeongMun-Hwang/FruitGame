@@ -281,7 +281,7 @@ return (
           <Text style={styles.timerText}>{formatTime(timer)}</Text>
         </View>
 
-        <Text style={styles.scoreText}>Score: {score}</Text>
+        <Text style={styles.scoreText}>점수 : {score}</Text>
         
         <View
           ref={gridContainerRef}
@@ -326,8 +326,8 @@ return (
         {gameOver && (
           <View style={styles.gameOverOverlay}>
             <View style={styles.gameOverPanel}>
-              <Text style={styles.gameOverText}>Game Over!</Text>
-              <Text style={styles.finalScoreText}>Final Score: {score}</Text>
+              <Text style={styles.gameOverText}>타임 아웃!</Text>
+              <Text style={styles.finalScoreText}>점수: {score}</Text>
               <TouchableOpacity style={styles.button} onPress={handleRestart}>
                 <Text style={styles.buttonText}>재시작</Text>
               </TouchableOpacity>
@@ -436,7 +436,7 @@ const styles = StyleSheet.create({
   },
   buttonText: {
     color: '#fff',
-    fontSize: 18,
+    fontSize: 20,
     fontWeight: 'bold',
   },
   topButtonsContainer: {
@@ -449,14 +449,13 @@ const styles = StyleSheet.create({
 },
 topButton: {
   backgroundColor: '#333',
-  paddingVertical: 6,
-  paddingHorizontal: 12,
+  paddingVertical: 5,
+  paddingHorizontal: 10,
   borderRadius: 6,
-  marginRight: 10,
 },
 topButtonText: {
   color: '#fff',
-  fontSize: 14,
+  fontSize: 20,
   fontWeight: 'bold',
 },
 loadingContainer: {
